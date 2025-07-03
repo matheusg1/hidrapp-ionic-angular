@@ -1,0 +1,7 @@
+{
+  "name": "hidrapp",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
