@@ -1,8 +1,8 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'io.ionic.starter',
-  appName: 'hidrapp',
+  appId: 'com.matheusg1.hidratapp',
+  appName: 'hidratapp',
   webDir: 'www'
 };
 
