@@ -1,4 +1,4 @@
-package io.ionic.starter;
+package com.matheusg1.hidratapp;
 
 import com.getcapacitor.BridgeActivity;
 
