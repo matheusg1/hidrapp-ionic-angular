@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
-import { AlertController, ModalController } from '@ionic/angular';
+import { AlertController } from '@ionic/angular';
 import { Storage } from '@ionic/storage-angular';
-
 
 @Component({
   selector: 'app-home',
@@ -10,28 +9,58 @@ import { Storage } from '@ionic/storage-angular';
   standalone: false,
 })
 export class HomePage {
-  metaDiaria: number = 2000;
-  quantidadeAtual: number = 0;
+  metaDiaria = 2000;
+  quantidadeAtual = 0;
+  altura = 0;
 
-  constructor(private alertCtrl: AlertController, private storage: Storage) { }
+  constructor(private alertCtrl: AlertController, private storage: Storage) {}
+
+  async ngOnInit() {
+    await this.storage.create();
+
+    const hoje = new Date().toDateString();
+    const ultimaData = await this.storage.get('data-ultima-visita');
+
+    if (ultimaData !== hoje) {
+      this.quantidadeAtual = 0;
+      await this.storage.set('data-ultima-visita', hoje);
+    }
+
+    const metaStorage = await this.storage.get('meta-diaria');
+    this.metaDiaria = metaStorage !== null ? metaStorage : this.metaDiaria;
+
+    const qtdStorage = await this.storage.get('quantidade-atual');
+    this.quantidadeAtual = qtdStorage !== null ? qtdStorage : this.quantidadeAtual;
+
+    this.atualizarBarra();
+  }
+
+  private atualizarBarra() {
+    const porcentagem = (this.quantidadeAtual / this.metaDiaria) * 100;
+    this.altura = porcentagem;
+    console.log(`Meta: ${this.metaDiaria}ml, Atual: ${this.quantidadeAtual}ml, ${porcentagem.toFixed(1)}%`);
+  }
+
+  private async atualizarMeta(valor: number) {
+    this.metaDiaria = valor;
+    await this.storage.set('meta-diaria', valor);
+    this.atualizarBarra();
+  }
+
+  private async atualizarQuantidade(valor: number) {
+    this.quantidadeAtual = valor;
+    await this.storage.set('quantidade-atual', valor);
+    this.atualizarBarra();
+  }
 
   async metaAlert() {
     const alert = await this.alertCtrl.create({
       header: 'Defina a meta diária',
-      inputs: [
-        {
-          type: 'number',
-          placeholder: 'Meta diária (ml)',
-          name: 'meta'
-        }
-      ],
+      inputs: [{ type: 'number', placeholder: 'Meta diária (ml)', name: 'meta' }],
       buttons: [
         {
           text: 'OK',
-          handler: (data) => {
-            this.metaDiaria = Number(data.meta);
-            this.storage.set('meta-diaria', this.metaDiaria);
-          }
+          handler: (data) => this.atualizarMeta(Number(data.meta))
         }
       ]
     });
@@ -41,52 +70,22 @@ export class HomePage {
   async quantidadeAtualAlert() {
     const alert = await this.alertCtrl.create({
       header: 'Corrigir quantidade',
-      inputs: [
-        {
-          type: 'number',
-          placeholder: 'Quantidade (ml)',
-          name: 'quantidade'
-        }
-      ],
+      inputs: [{ type: 'number', placeholder: 'Quantidade (ml)', name: 'quantidade' }],
       buttons: [
         {
           text: 'OK',
-          handler: (data) => {
-            this.quantidadeAtual = Number(data.quantidade);
-            this.storage.set('quantidade-atual', this.quantidadeAtual);
-          }
+          handler: (data) => this.atualizarQuantidade(Number(data.quantidade))
         }
       ]
     });
     await alert.present();
   }
 
-  async ngOnInit() {
-    await this.storage.create();
-
-    const metaDiariaStorage = await this.storage.get('meta-diaria');
-    const quantidadeAtualStorage = await this.storage.get('quantidade-atual');
-
-    if (metaDiariaStorage) {
-      this.metaDiaria = await this.storage.get('meta-diaria')
-    } else {
-      await this.storage.set('meta-diaria', this.metaDiaria);
-    }
-    
-    if (quantidadeAtualStorage) {
-      this.quantidadeAtual = await this.storage.get('quantidade-atual')
-    } else {
-      await this.storage.set('quantidade-atual', this.quantidadeAtual);
-    }
-  }
-
   addQuantidade(quantidade: number) {
-    this.quantidadeAtual += quantidade;
-    this.storage.set('quantidade-atual', this.quantidadeAtual);
+    this.atualizarQuantidade(this.quantidadeAtual + quantidade);
   }
 
   corrigirQuantidade(quantidade: number) {
-    this.quantidadeAtual = quantidade;
-    this.storage.set('quantidade-atual', this.quantidadeAtual);
+    this.atualizarQuantidade(quantidade);
   }
 }

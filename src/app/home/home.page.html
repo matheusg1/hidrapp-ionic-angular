@@ -1,23 +1,16 @@
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
-
-  <!-- <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer"
-        href="https://ionicframework.com/docs/components">UI Components</a></p>
-  </div> -->
   <div id="container">
-    <div>META DIARIA: {{ metaDiaria }} </div>
-    <div>VALOR ATUAL: {{ quantidadeAtual }} </div>
-    <ion-button (click)="metaAlert()">Definir meta diária</ion-button>
-    <ion-button (click)="quantidadeAtualAlert()">Corrigir quantidade atual</ion-button>
-
-    <ion-button (click)="addQuantidade(473)">Add 473ml</ion-button>
-    <ion-button (click)="addQuantidade(500)">Add 500ml</ion-button>
-    <ion-button (click)="addQuantidade(1000)">Add 1L</ion-button>
+    <div class="water">
+      <div class="fill" [ngStyle]="{ height: altura + '%' }"></div>
+    </div>
+    <div>Quantidade atual: {{ quantidadeAtual }} </div>
+    <div>Meta diária: {{ metaDiaria }} </div>
+    <div class="buttons">
+      <ion-button fill="outline" color="medium" (click)="metaAlert()">Definir meta diária</ion-button>
+      <ion-button fill="outline" color="medium" (click)="quantidadeAtualAlert()">Corrigir quantidade atual</ion-button>
+      <ion-button fill="outline" color="medium" (click)="addQuantidade(473)">Add 473ml</ion-button>
+      <ion-button fill="outline" color="medium" (click)="addQuantidade(500)">Add 500ml</ion-button>
+      <ion-button fill="outline" color="medium" (click)="addQuantidade(1000)">Add 1L</ion-button>
+    </div>
   </div>
 </ion-content>
